@@ -66,9 +66,12 @@ module WebsocketRails
 
     def generate_unique_token
       begin
+        begin
+          new_token = SecureRandom.uuid
+        end while channel_tokens.values.include?(new_token)
+      rescue
         new_token = SecureRandom.uuid
-      end while channel_tokens.all != {} && channel_tokens.values.include?(new_token)
-
+      end
       new_token
     end
 
