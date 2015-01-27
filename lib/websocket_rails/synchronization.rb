@@ -166,7 +166,11 @@ module WebsocketRails
         raw_user = redis.hget('websocket_rails.users', identifier)
         #@todo correct validate json
         begin
-          raw_user ? ActiveSupport::JSON.decode(raw_user.to_json) : nil
+          if raw_user && raw_user != 1
+            ActiveSupport::JSON.decode(raw_user.to_json)
+          else
+            nil
+          end
         rescue Exception => exception
           log_exception(exception)
           raw_user = nil
