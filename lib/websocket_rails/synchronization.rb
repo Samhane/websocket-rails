@@ -165,11 +165,13 @@ module WebsocketRails
       Fiber.new do
         raw_user = redis.hget('websocket_rails.users', identifier)
         #@todo correct validate json
-        if raw_user && raw_user != 1
-          JSON.parse(raw_user)
-        else
-          nil
+        begin
+          raw_user ? ActiveSupport::JSON.decode(raw_user.to_json) : nil
+        rescue Exception => exception
+          log_exception(exception)
+          raw_user = nil
         end
+        raw_user
       end.resume
     end
 
